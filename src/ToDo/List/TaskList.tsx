@@ -3,16 +3,21 @@ import { useContext } from "react";
 import { TodoContext } from "../TodoProvider";
 import { ActionTypeEnum, ITask } from "../Type";
 import TaskListStyle from "./TaskList.style";
-import TodoString from '../String.json'
+import TodoString from "../String.json";
+import TaskDescription from "./TaskDescription";
 
 const TaskList = () => {
   const { activeTasks, dispatch } = useContext(TodoContext);
 
   const onTaskDelete = (id: string) => {
-    if(window.confirm(TodoString.deleteConfirm)) {
+    if (window.confirm(TodoString.deleteConfirm)) {
       dispatch({ type: ActionTypeEnum.Delete, data: { id } });
     }
   };
+
+  const onFavoriteClick = (id: string) => {
+    dispatch({ type: ActionTypeEnum.ToggleFavorite, data: { id } });
+  }
 
   const onRenderCell = (task: ITask) => {
     return (
@@ -24,10 +29,11 @@ const TaskList = () => {
         </Stack>
 
         <Stack horizontal style={{ width: "15%" }}>
-          <FontIcon iconName="Info" className={TaskListStyle.iconStyle} />
+          <TaskDescription />
           <FontIcon
             iconName={task.isFav ? "FavoriteStarFill" : "FavoriteStar"}
-            className={TaskListStyle.iconStyle}
+            className={task.isFav ? mergeStyles(TaskListStyle.iconStyle, { color: "blue" }) : TaskListStyle.iconStyle}
+            onClick={() => onFavoriteClick(task.id)}
           />
           <FontIcon iconName="EditNote" className={TaskListStyle.iconStyle} />
           <FontIcon
