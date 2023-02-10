@@ -6,7 +6,11 @@ import TaskListStyle from "./TaskList.style";
 import TodoString from "../String.json";
 import TaskDescription from "./TaskDescription";
 
-const TaskList = () => {
+type Props = {
+  setEditTask: (taskId: string) => void;
+};
+
+const TaskList = ({ setEditTask }: Props) => {
   const { activeTasks, dispatch } = useContext(TodoContext);
 
   const onTaskDelete = (id: string) => {
@@ -17,7 +21,7 @@ const TaskList = () => {
 
   const onFavoriteClick = (id: string) => {
     dispatch({ type: ActionTypeEnum.ToggleFavorite, data: { id } });
-  }
+  };
 
   const onRenderCell = (task: ITask) => {
     return (
@@ -29,13 +33,22 @@ const TaskList = () => {
         </Stack>
 
         <Stack horizontal style={{ width: "15%" }}>
-          <TaskDescription />
+          <TaskDescription task={task} />
           <FontIcon
             iconName={task.isFav ? "FavoriteStarFill" : "FavoriteStar"}
-            className={task.isFav ? mergeStyles(TaskListStyle.iconStyle, { color: "blue" }) : TaskListStyle.iconStyle}
+            className={
+              task.isFav
+                ? mergeStyles(TaskListStyle.iconStyle, { color: "orange" })
+                : TaskListStyle.iconStyle
+            }
             onClick={() => onFavoriteClick(task.id)}
           />
-          <FontIcon iconName="EditNote" className={TaskListStyle.iconStyle} />
+          <FontIcon
+            iconName="EditNote"
+            className={TaskListStyle.iconStyle}
+            onClick={() => {
+              setEditTask(task.id)}}
+          />
           <FontIcon
             iconName="Delete"
             className={TaskListStyle.iconStyle}

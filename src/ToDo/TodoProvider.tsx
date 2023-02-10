@@ -1,6 +1,6 @@
 import { getCommandButtonStyles } from "@fluentui/react";
 import React, { createContext, useReducer } from "react";
-import { ActionTypeEnum, IAddAction, IDeleteAction, IReducerAction, ITask, ITodoContext, ITodoState, IToggleFavoriteAction } from "./Type";
+import { ActionTypeEnum, IAddAction, IDeleteAction, IReducerAction, ITask, ITodoContext, ITodoState, IToggleFavoriteAction, IUpdateAction } from "./Type";
 import { clone } from "./utility";
 
 export const TodoContext = createContext<ITodoContext>({
@@ -32,7 +32,16 @@ const toggleFavoriteAction = (state: ITodoState, action: IToggleFavoriteAction) 
   if(index >= 0) {
     cloneActiveTasks[index].isFav = !cloneActiveTasks[index].isFav;
   }
-  return state.activeTasks;
+  return cloneActiveTasks;
+}
+
+const updateTaskAction = (state: ITodoState, action: IUpdateAction) => {
+  const cloneActiveTasks: ITask[] = clone(state.activeTasks);
+  const index = cloneActiveTasks.findIndex(x => x.id === action.data.id);
+  if(index >= 0) {
+    cloneActiveTasks[index] = action.data;
+  }
+  return cloneActiveTasks;
 }
 
 const reducer = (state: ITodoState, action: IReducerAction) => {
@@ -46,6 +55,8 @@ const reducer = (state: ITodoState, action: IReducerAction) => {
       return { ...state, activeTasks: deleteTaskAction(state, action) };
     case ActionTypeEnum.ToggleFavorite:
       return {...state, activeTasks : toggleFavoriteAction(state, action) };
+    case ActionTypeEnum.Update:
+      return {...state, activeTasks : updateTaskAction(state, action) };
   }
 
   return { ...state };
