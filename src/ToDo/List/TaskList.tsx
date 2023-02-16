@@ -1,4 +1,10 @@
-import { Checkbox, FontIcon, mergeStyles, Stack } from "@fluentui/react";
+import {
+  Checkbox,
+  FontIcon,
+  mergeStyles,
+  MessageBar,
+  Stack,
+} from "@fluentui/react";
 import { useContext } from "react";
 import { TodoContext } from "../TodoProvider";
 import { ActionTypeEnum, ITask } from "../Type";
@@ -23,12 +29,20 @@ const TaskList = ({ setEditTask }: Props) => {
     dispatch({ type: ActionTypeEnum.ToggleFavorite, data: { id } });
   };
 
+  const checkboxClickedHnd = (id: string) => {
+    dispatch({ type: ActionTypeEnum.Completed, data: { id } });
+  };
+
   const onRenderCell = (task: ITask) => {
     return (
       /* horizontal align items in a roll */
       <Stack horizontal key={task.id} className={TaskListStyle.taskItem}>
         <Stack horizontal style={{ width: "85%" }}>
-          <Checkbox />
+          <Checkbox
+            onChange={() => {
+              checkboxClickedHnd(task.id);
+            }}
+          />
           {task.title}
         </Stack>
 
@@ -47,7 +61,8 @@ const TaskList = ({ setEditTask }: Props) => {
             iconName="EditNote"
             className={TaskListStyle.iconStyle}
             onClick={() => {
-              setEditTask(task.id)}}
+              setEditTask(task.id);
+            }}
           />
           <FontIcon
             iconName="Delete"
@@ -59,7 +74,15 @@ const TaskList = ({ setEditTask }: Props) => {
     );
   };
 
-  return <div>{activeTasks.map(onRenderCell)}</div>;
+  return (
+    <div>
+      {activeTasks.length ? (
+        activeTasks.map(onRenderCell)
+      ) : (
+        <MessageBar>No tasks to show</MessageBar>
+      )}
+    </div>
+  );
 };
 
 export default TaskList;
